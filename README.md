@@ -1,13 +1,14 @@
-# GreenStitch Backend Assignment
-# Login and Signup Backend API with Spring Security and JWT Tokens
+# Java Spring Evaluation
+# Login and Signup Backend API with JWT Tokens
 
 This project is a backend implementation of a login and signup REST API with security and JWT tokens. It is built using Java, and Spring Boot, and utilizes the H2 database for data storage. The API endpoints provided below demonstrate the functionality of the application.
+
 
 ## Installation and Setup
 
 ```
 ### Prerequisites
-- Java Development Kit (JDK) 8 or later
+- Java Development Kit (JDK) 21 or later
 - Maven
 - Postman (for testing the API)
 ```
@@ -15,13 +16,13 @@ This project is a backend implementation of a login and signup REST API with sec
 ### 1. Clone the Repository
 
 ```
-git clone https://github.com/Shimbhu77/GreenStitch_Backend_Assignment.git
+git clone https://github.com/gl-training/Java_Spring_Evaluation.git
 ```
 
 ### 2. Go the Project
 
 ```
-cd GreenStitch_Backend_Assignment/GreenStitch_Assignment
+cd /Java_Spring_Evaluation
 
 ```
 
@@ -43,12 +44,17 @@ cd GreenStitch_Backend_Assignment/GreenStitch_Assignment
 - Request Body: User data in the JSON format (e.g., name, email, password).
 
 ```
-
 {
-  "fullName": "Shimbhu Kumawat",
-  "password": "Shimbhu@123",
-  "email": "sk@gmail.com"
+  "name": "Michael",  
+  "email": "mfelipe@gmail.com",
+  "password": "a2asfGfdfdf3",
+  "phones": [{
+    "number": "10",
+    "cityCode": "11",
+    "countryCode": "12"
+  }]
 }
+
 ```
 
 - Response:
@@ -107,7 +113,6 @@ cd GreenStitch_Backend_Assignment/GreenStitch_Assignment
 - JWT Token
 - Lombok
 - Maven
-- Swagger-UI
 
 ### Validation Rules
 
@@ -131,7 +136,7 @@ The project can be imported and run using an IDE like Eclipse.
 
 ### Test API
 
-You can use Postman and Swagger-UI to test the API endpoints.
+You can use Postman to test the API endpoints.
 
 ## H2 Database Configuration
 
@@ -153,8 +158,3 @@ spring.h2.console.enabled=true
 spring.h2.console.path=/h2-console
 
 ```
-
-## **Contributors**
-
-- **[Shimbhu Kumawat](https://github.com/Shimbhu77)**
- 
