@@ -61,11 +61,10 @@ cd /Java_Spring_Evaluation
 
 ```
 {
-    "id": 1,
-    "fullName": "Shimbhu Kumawat",
-    "password": "$2a$10$KVzpEHKFpX2ephA7RXLgqumnZKFy3bT8wdJMW3tYH2yqUJcpZPGSG",
-    "email": "sk@gmail.com",
-    "role": "ROLE_USER"
+    "id": "af47d09f-23f1-4d31-a1c6-9e6710c9c612",
+    "created": "2026-01-15T12:04:41.925126",
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZmVsaXBlQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoibWZlbGlwZUBnbWFpbC5jb20iLCJpYXQiOjE3Njg0OTY2ODEsImV4cCI6MTc2ODUzMjY4MX0.p3c2xzjoqAz5hcNdJX_iG7nzcQKX4qMQiWNLAGhAad8",
+    "isActive": true
 }
 
 ```
