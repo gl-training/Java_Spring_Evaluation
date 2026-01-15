@@ -116,14 +116,11 @@ The following validation rules are applied to the user entity:
 
 - Name: Optional
 - Phones: Optional
-    - Minimum length: 3 characters
-    - Maximum length: 20 characters
 - Password:
     - Between 8 and 12 characters
     - Contains just one uppercase letter
     - Contains just two digits
     - Contains at least one lowercase letter
-    - Encrypted
 - Email:
     - Valid email format
 
