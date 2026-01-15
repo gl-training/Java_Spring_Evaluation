@@ -1,7 +1,7 @@
 # Java Spring Evaluation
-# Login and Signup Backend API with JWT Tokens
+# Signup and Login Backend API with JWT Tokens
 
-This project is a backend implementation of a login and signup REST API with security and JWT tokens. It is built using Java, and Spring Boot, and utilizes the H2 database for data storage. The API endpoints provided below demonstrate the functionality of the application.
+This project is a backend implementation of a login and signup REST API with Spring security and JWT tokens. It is built using Java, and Spring Boot, and utilizes the H2 database for data storage. The API endpoints provided below demonstrate the functionality of the application.
 
 
 ## Installation and Setup
@@ -70,39 +70,36 @@ cd /Java_Spring_Evaluation
 
 ```
 
-### User Login
+### User Login (Requires JWT Authentication)
 
 - Method: GET
-- Path: `http://localhost:8888/app/sign-in`
-- Description: Authenticate a user and retrieve their details and JWT token.
-- Authentication: Basic Authentication (Username and Password)
-    - Username: [sk@gmail.com](mailto:sk@gmail.com)
-    - Password: Shimbhu@123
-- Response:
-
-```
-{
-    "id": 1,
-    "fullName": "Shimbhu Kumawat",
-    "password": "$2a$10$KVzpEHKFpX2ephA7RXLgqumnZKFy3bT8wdJMW3tYH2yqUJcpZPGSG",
-    "email": "sk@gmail.com",
-    "role": "ROLE_USER"
-}
-
-```
-
-### Welcome Endpoint (Requires Authentication)
-
-- Method: GET
-- Path: `http://localhost:8888/app/logged-in/user`
+- Path: `http://localhost:8888/app/login`
 - Description: A protected endpoint that requires authentication to access.
 - Authentication: Bearer Token
 - Request Header:
     - Authorization: Bearer <token>
-- Response: A welcome message string.
-- Example:
-    - Bearer Token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTaGltYmh1Iiwic3ViIjoiSldUIFRva2VuIiwidXNlcm5hbWUiOiJza0BnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNjg1Njc3Mzg3LCJleHAiOjE2ODU3MDczODd9.VwM2IGD1fABjEcnNoMb4uIyBnYe3_BmZGx33dElaD-E
-    - Response: Hello from GreenStitch
+- Example Token:
+    - Bearer Token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZmVsaXBlQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoibWZlbGlwZUBnbWFpbC5jb20iLCJpYXQiOjE3Njg0OTY2ODEsImV4cCI6MTc2ODUzMjY4MX0.p3c2xzjoqAz5hcNdJX_iG7nzcQKX4qMQiWNLAGhAad8
+- Response:
+```
+{
+    "id": "af47d09f-23f1-4d31-a1c6-9e6710c9c612",
+    "created": "2026-01-15T12:04:41.925126",
+    "lastLogin": "2026-01-15T12:07:15.8422162",
+    "name": "Michael",
+    "email": "mfelipe@gmail.com",
+    "password": "a2asfGfdfdf3",
+    "phones": [
+        {
+            "number": "10",
+            "cityCode": "11",
+            "countryCode": "12"
+        }
+    ],
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZmVsaXBlQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoibWZlbGlwZUBnbWFpbC5jb20iLCJpYXQiOjE3Njg0OTY4MzUsImV4cCI6MTc2ODUzMjgzNX0.iiGkmH4mdj2-w3QGN6BN336LsNcSIc-A86yd-SbEIIk",
+    "isActive": true
+}
+```
 
 ### Tech Stack
 
@@ -118,21 +115,22 @@ cd /Java_Spring_Evaluation
 
 The following validation rules are applied to the user entity:
 
-- Full Name:
+- Name: Optional
+- Phones: Optional
     - Minimum length: 3 characters
     - Maximum length: 20 characters
 - Password:
-    - At least 8 characters
-    - Contains at least one digit
+    - Between 8 and 12 characters
+    - Contains just one uppercase letter
+    - Contains just two digits
     - Contains at least one lowercase letter
-    - Contains at least one uppercase letter
-    - Contains at least one special character
+    - Encrypted
 - Email:
     - Valid email format
 
 ### Development
 
-The project can be imported and run using an IDE like Eclipse.
+The project can be imported and run using an IDE like IntelliJ Idea.
 
 ### Test API
 
