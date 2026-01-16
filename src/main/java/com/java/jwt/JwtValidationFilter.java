@@ -1,14 +1,21 @@
 package com.java.jwt;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.java.exceptions.ErrorCode;
+import com.java.exceptions.ErrorDetails;
+import com.java.exceptions.UserException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +35,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+			throws ServletException, IOException, AuthenticationException {
 	
 		log.info("inside JWT validation filter.");
 		String jwt= request.getHeader(SecurityConstants.JWT_HEADER);
@@ -51,13 +58,14 @@ public class JwtValidationFilter extends OncePerRequestFilter {
 
 				SecurityContextHolder.getContext().setAuthentication(auth);
 			} catch (Exception e) {
-			    throw new BadCredentialsException("Invalid JWT Token received..");
-		    }
-			
+			    throw new BadCredentialsException("Invalid JWT Token received..", e);
+			}
+
 		}
 		filterChain.doFilter(request, response);
+
 	}
-	
+
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		return request.getServletPath().equals("/app/sign-up");

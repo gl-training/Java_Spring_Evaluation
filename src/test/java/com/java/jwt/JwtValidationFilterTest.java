@@ -35,7 +35,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class JwtValidationFilterTest {
 
-    // Class Under Test (CUT)
     private final JwtValidationFilter filter = new JwtValidationFilter();
 
     @Mock
@@ -47,23 +46,14 @@ class JwtValidationFilterTest {
     @Mock
     private FilterChain filterChain;
 
-    @Mock // Mocking the log dependency if it was injected/used via a field
+    @Mock
     private Logger log;
-
-    // We need to inject the mock log into the private field of the filter
-    // For simplicity, we assume 'log' is statically accessible or injected.
-    // If 'log' is a private field, we'd use reflection or @InjectMocks.
-    // For this example, we assume the log call is internal and focus on core logic.
 
     private final String VALID_JWT_HEADER = "Bearer valid_token";
     private final String INVALID_JWT_HEADER = "Bearer invalid_token";
     private final String VALID_USERNAME = "testuser@example.com";
     private final String VALID_ROLE = "ROLE_ADMIN"; // As hardcoded in the filter
 
-    /**
-     * Test case: No JWT header is present in the request.
-     * Expected: Filter chain proceeds, and no authentication is set.
-     */
     @Test
     void doFilterInternal_NoJwtHeader_ShouldProceedWithoutSettingAuth() throws ServletException, IOException {
         // Arrange
@@ -73,7 +63,6 @@ class JwtValidationFilterTest {
         filter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        // Verify filterChain.doFilter was called
         verify(filterChain, times(1)).doFilter(request, response);
 
         // Verify SecurityContextHolder was NOT accessed for setting authentication
@@ -82,12 +71,6 @@ class JwtValidationFilterTest {
         }
     }
 
-    /**
-     * Test case: A valid JWT header is present.
-     * Expected: Authentication is set in SecurityContext, and filter chain proceeds.
-     * <p>
-     * Note: We must mock the static JWT library calls (Jwts, Keys) and SecurityContextHolder.
-     */
     @Test
     void doFilterInternal_ValidJwtHeader_ShouldSetAuthAndProceed() throws ServletException, IOException {
         // Arrange
@@ -140,12 +123,6 @@ class JwtValidationFilterTest {
         }
     }
 
-    /**
-     * Test case: JWT header is present but malformed (e.g., no "Bearer " prefix or too short).
-     * The original code uses 'jwt = jwt.substring(7);', which will throw an IndexOutOfBoundsException
-     * if the token is shorter than 7 characters, which is caught by the filter's generic 'catch (Exception e)'.
-     * Expected: BadCredentialsException is thrown.
-     */
     @Test
     void doFilterInternal_MalformedJwtHeader_ShouldThrowBadCredentialsException() {
         // Arrange
@@ -153,8 +130,8 @@ class JwtValidationFilterTest {
         when(request.getHeader(SecurityConstants.JWT_HEADER)).thenReturn("Bearer");
 
         // Act & Assert
-        // The exception thrown is a BadCredentialsException because the filter catches the IndexOutOfBoundsException
-        // and re-throws a BadCredentialsException.
+        // The exception thrown is a BadCredentialsException because the filter catches the IndexOutOfBoundsException and re-throws a BadCredentialsException.
+
         assertThrows(BadCredentialsException.class, () ->
                 filter.doFilterInternal(request, response, filterChain)
         );
@@ -167,11 +144,6 @@ class JwtValidationFilterTest {
         }
     }
 
-    /**
-     * Test case: JWT parsing fails (e.g., expired, invalid signature, corrupted).
-     * The original code catches any Exception from the JWT parsing and re-throws a BadCredentialsException.
-     * Expected: BadCredentialsException is thrown.
-     */
     @Test
     void doFilterInternal_InvalidJwtHeader_ShouldThrowBadCredentialsException() {
         // Arrange
@@ -199,6 +171,7 @@ class JwtValidationFilterTest {
             // Act & Assert
             // The exception thrown is a BadCredentialsException because the filter catches the ExpiredJwtException
             // and re-throws a BadCredentialsException.
+
             assertThrows(BadCredentialsException.class, () ->
                     filter.doFilterInternal(request, response, filterChain)
             );

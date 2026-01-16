@@ -76,10 +76,6 @@ class UserControllerTest {
         mockUserInfoResponse.setToken("mock-jwt-token-login");
     }
 
-    // =================================================================
-    // Tests for signUpUserHandler
-    // =================================================================
-
     @Test
     @WithMockUser(username = "new.user@test.com", roles = {"USER"})
     void signUpUserHandler_Success_ShouldReturn201Created() throws Exception {
@@ -105,29 +101,18 @@ class UserControllerTest {
         when(userService.registerUser(any(UserDTO.class))).thenThrow(new UserException(exceptionMessage));
 
         // Act & Assert
-        // Since the controller method explicitly declares 'throws UserException', MockMvc will throw
-        // a nested exception when the service mock throws it. We can assert the thrown exception type.
         mockMvc.perform(post("/app/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockUserDTO)).with(csrf()))
-                // Verify the response is not a successful status, and often, without a @ControllerAdvice,
-                // Spring may default to a 500 error or a more complex exception.
-                // We check if the controller method propagates the exception as expected.
                 .andExpect(result -> {
-                    // This verifies the service exception is correctly thrown/wrapped by MockMvc
                     Exception rootCause = result.getResolvedException();
                     if (rootCause instanceof UserException userException) {
                         assertEquals(exceptionMessage, userException.getMessage());
                     } else {
-                        // If it's not the UserException, it means the test environment is catching it differently
                         throw new AssertionError("Expected UserException as the cause, but got: " + (rootCause != null ? rootCause.getClass().getSimpleName() : "null"));
                     }
                 });
     }
-
-    // =================================================================
-    // Tests for welcomeLoggedInUserHandler
-    // =================================================================
 
     @Test
     @WithMockUser(username = "new.user@test.com", roles = {"USER"})
@@ -153,7 +138,6 @@ class UserControllerTest {
         when(userService.loginUser()).thenThrow(new UserException(exceptionMessage));
 
         // Act & Assert
-        // Similar to the sign-up failure, we verify the exception propagation.
         mockMvc.perform(get("/app/login")
                         .contentType(MediaType.APPLICATION_JSON).with(csrf()))
                 .andExpect(result -> {

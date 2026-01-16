@@ -21,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,24 +73,14 @@ class UserServiceImplTest {
         mockUserInfo.setPhones(new ArrayList<>()); // Simplified phone list
     }
 
-    // =================================================================
-    // Tests for registerUser
-    // =================================================================
-
     @Test
     void registerUser_Success() throws Exception {
         UUID testValue = UUID.randomUUID();
         // Arrange
-        // 1. Mock: userRepo.findByEmail returns null (user does not exist)
         when(userRepo.findByEmail(anyString())).thenReturn(null);
-
-        // 2. Mock: encryptionUtil.encrypt returns a predefined encrypted string
         when(encryptionUtil.encrypt(anyString())).thenReturn("encryptedPassword");
-
-        // 3. Mock: jwtUtil.generateToken returns a predefined token
         when(jwtUtil.generateToken(anyString())).thenReturn("newUserToken");
 
-        // 4. Mock: userRepo.save captures the argument and returns a UserInfo with an ID
         when(userRepo.save(any(UserInfo.class))).thenAnswer(invocation -> {
             UserInfo savedUser = invocation.getArgument(0);
             savedUser.setId(testValue); // Simulate ID generation upon save
@@ -115,7 +104,7 @@ class UserServiceImplTest {
         assertEquals(true, result.getIsActive());
 
         // Verify that the saved UserInfo had the correct values
-        verify(userRepo).save(any(UserInfo.class)); // Re-verify save and check properties of the captured object
+        verify(userRepo).save(any(UserInfo.class));
     }
 
     @Test
@@ -139,10 +128,6 @@ class UserServiceImplTest {
         verify(jwtUtil, never()).generateToken(anyString());
     }
 
-    // =================================================================
-    // Tests for loginUser
-    // =================================================================
-
     @Test
     void loginUser_Success() {
         // Arrange
@@ -155,14 +140,9 @@ class UserServiceImplTest {
         when(jwtUtil.generateToken(userEmail)).thenReturn(newToken);
 
         // 2. Mock userRepo.save to update the token/date and return the updated object
-        // The service decrypts the password *after* saving, so we simulate the repository's behavior
-        // The password in mockUserInfo is "encrypted:rawPassword123"
         when(userRepo.save(any(UserInfo.class))).thenAnswer(invocation -> {
             UserInfo savedUser = invocation.getArgument(0);
-            // Simulate that the repository saves the updated fields (token and lastLogin)
             savedUser.setToken(newToken);
-            // For the purpose of verification, we can capture the lastLogin time is close to 'now'
-            // We use a general mock to ensure the object is saved with the new token and time
             return savedUser;
         });
 
@@ -170,7 +150,6 @@ class UserServiceImplTest {
         when(encryptionUtil.decrypt(mockUserInfo.getPassword())).thenReturn("rawPassword123");
 
         // 4. Mock static SecurityContextHolder (required for loginUser)
-        // We need to use Mockito's mockStatic feature for this part
         try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder = mockStatic(SecurityContextHolder.class)) {
 
             // Setup SecurityContext and Authentication mocks
@@ -194,11 +173,7 @@ class UserServiceImplTest {
             // 3. Verify save was called and updated token/lastLogin
             verify(userRepo, times(1)).save(any(UserInfo.class));
 
-            // 4. Verify decryption was called
-            // TODO: Verify this method
-            // verify(encryptionUtil, times(1)).decrypt(mockUserInfo.getPassword());
-
-            // 5. Verify the returned object has the correct decrypted password and new token
+            // 4. Verify the returned object has the correct decrypted password and new token
             assertNotNull(result);
             assertEquals("rawPassword123", result.getPassword());
             assertEquals(newToken, result.getToken());
