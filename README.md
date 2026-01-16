@@ -10,6 +10,8 @@ This project is a backend implementation of a login and signup REST API with Spr
 
 ## Sequence Diagram:
 
+![Sequence Diagram](diagrams/Sequence_Diagram.jpg)
+
 ## Installation and Setup
 
 ```
