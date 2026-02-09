@@ -1,6 +1,5 @@
 package com.java.service;
 
-import com.java.model.PhoneDTO;
 import com.java.model.PhoneInfo;
 import com.java.utils.EncryptionUtil;
 import com.java.utils.JwtUtil;
@@ -16,8 +15,9 @@ import com.java.model.UserInfo;
 import com.java.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,9 +34,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDTO registerUser(UserDTO user) throws UserException {
  
-		UserInfo findUser = userRepo.findByEmail(user.getEmail());
-		
-		if(findUser!=null) {
+		Optional<UserInfo> findUser = userRepo.findByEmail(user.getEmail());
+		if(findUser.isPresent()) {
 			throw new UserException("User already exist with email: "+user.getEmail());
 		}
 
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
 		return getUserResponse(userRepo.save(newUser));
 	}
 
-	private static UserDTO getUserResponse(UserInfo userInfo) {
+	private UserDTO getUserResponse(UserInfo userInfo) {
 		UserDTO userResponse = new UserDTO();
 		userResponse.setId(String.valueOf(userInfo.getId()));
 		userResponse.setCreated(userInfo.getCreated());
@@ -67,26 +66,32 @@ public class UserServiceImpl implements UserService {
 		newUser.setPassword(user.getPassword());
 
 		if (!user.getPhones().isEmpty()){
-			List<PhoneInfo> phones = new ArrayList<>();
-			for(PhoneDTO phoneDTO: user.getPhones()){
-				PhoneInfo phoneInfo = new PhoneInfo();
-				phoneInfo.setCityCode(phoneDTO.getCityCode());
-				phoneInfo.setNumber(phoneDTO.getNumber());
-				phoneInfo.setCountryCode(phoneDTO.getCountryCode());
-				phones.add(phoneInfo);
-			}
+			List<PhoneInfo> phones = user.getPhones().stream()
+				.map(phoneDTO -> {
+					PhoneInfo phoneInfo = new PhoneInfo();
+					phoneInfo.setCityCode(phoneDTO.getCityCode());
+					phoneInfo.setNumber(phoneDTO.getNumber());
+					phoneInfo.setCountryCode(phoneDTO.getCountryCode());
+					return phoneInfo;
+				})
+				.collect(Collectors.toList());
 			newUser.setPhones(phones);
 		}
 		return newUser;
 	}
 
 	@Override
-	public UserInfo loginUser() {
+	public UserInfo loginUser() throws UserException {
 			
 		SecurityContext sc  = SecurityContextHolder.getContext();
 		Authentication auth  = sc.getAuthentication();
 		String userName = auth.getName();
-		UserInfo user = userRepo.findByEmail(userName);
+		Optional<UserInfo> findUser = userRepo.findByEmail(userName);
+
+		if(!findUser.isPresent()) {
+			throw new UserException("User doesn't exist with email: "+userName);
+		}
+		UserInfo user = findUser.get();
 
 		// Update Token and Last Login Date
 		user.setToken(jwtUtil.generateToken(user.getEmail()));

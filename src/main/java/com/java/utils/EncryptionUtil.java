@@ -23,7 +23,6 @@ public class EncryptionUtil {
         }
     }
 
-
     public String encrypt(String data) {
         try {
             Cipher cipher = Cipher.getInstance(ENC_ALGORITHM);

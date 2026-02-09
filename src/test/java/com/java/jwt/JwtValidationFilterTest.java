@@ -5,16 +5,15 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParserBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -130,9 +129,9 @@ class JwtValidationFilterTest {
         when(request.getHeader(SecurityConstants.JWT_HEADER)).thenReturn("Bearer");
 
         // Act & Assert
-        // The exception thrown is a BadCredentialsException because the filter catches the IndexOutOfBoundsException and re-throws a BadCredentialsException.
+        // The exception thrown is a IllegalArgumentException because the filter catches the IndexOutOfBoundsException and re-throws a IllegalArgumentException.
 
-        assertThrows(BadCredentialsException.class, () ->
+        assertThrows(IllegalArgumentException.class, () ->
                 filter.doFilterInternal(request, response, filterChain)
         );
 
@@ -169,10 +168,10 @@ class JwtValidationFilterTest {
             when(mockParser.parseClaimsJws(anyString())).thenThrow(new ExpiredJwtException(null, null, "Token expired"));
 
             // Act & Assert
-            // The exception thrown is a BadCredentialsException because the filter catches the ExpiredJwtException
+            // The exception thrown is a IllegalArgumentException because the filter catches the ExpiredJwtException
             // and re-throws a BadCredentialsException.
 
-            assertThrows(BadCredentialsException.class, () ->
+            assertThrows(IllegalArgumentException.class, () ->
                     filter.doFilterInternal(request, response, filterChain)
             );
 

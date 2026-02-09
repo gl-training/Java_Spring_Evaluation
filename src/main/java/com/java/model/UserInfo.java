@@ -1,9 +1,7 @@
 package com.java.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +18,7 @@ import java.util.UUID;
 public class UserInfo {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     @CreationTimestamp
@@ -31,20 +29,15 @@ public class UserInfo {
     private LocalDateTime lastLogin;
 
     @Column(name = "name", nullable = true)
-	@Size(message = "Enter minimum 3 character and maximum 20 characters in full name.")
     private String name;
 
     @Column(unique = true)
     @Email(message = "Enter a valid email address.")
     private String email;
 
-    @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
-            message = "Invalid password. It must contain at least 8 characters, including at least one digit, one lowercase letter, one uppercase letter, and one special character."
-        )
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Column(name = "phones", nullable = true)
     @JoinColumn(name = "phone_id")
     private List<PhoneInfo> phones;

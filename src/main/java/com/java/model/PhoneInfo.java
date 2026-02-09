@@ -1,7 +1,7 @@
 package com.java.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,8 +16,8 @@ public class PhoneInfo {
     @JsonIgnore
     private Long id;
 
-    private String number;
-    private String cityCode;
+    private Long number;
+    private Integer cityCode;
     private String countryCode;
 
 }

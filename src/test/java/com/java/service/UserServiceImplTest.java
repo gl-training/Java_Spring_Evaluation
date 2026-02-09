@@ -20,9 +20,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -50,15 +48,15 @@ class UserServiceImplTest {
     void setUp() {
         // Setup a UserDTO for registration
         PhoneDTO phoneDTO = new PhoneDTO();
-        phoneDTO.setNumber("12345678");
-        phoneDTO.setCityCode("11");
+        phoneDTO.setNumber(12345678L);
+        phoneDTO.setCityCode(11);
         phoneDTO.setCountryCode("57");
 
         mockUserDTO = new UserDTO();
         mockUserDTO.setName("Test User");
         mockUserDTO.setEmail("test@example.com");
         mockUserDTO.setPassword("rawPassword123");
-        mockUserDTO.setPhones(List.of(phoneDTO));
+        mockUserDTO.setPhones(Collections.singletonList(phoneDTO));
 
         // Setup a UserInfo for successful save/login
         mockUserInfo = new UserInfo();
@@ -77,7 +75,7 @@ class UserServiceImplTest {
     void registerUser_Success() throws Exception {
         UUID testValue = UUID.randomUUID();
         // Arrange
-        when(userRepo.findByEmail(anyString())).thenReturn(null);
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
         when(encryptionUtil.encrypt(anyString())).thenReturn("encryptedPassword");
         when(jwtUtil.generateToken(anyString())).thenReturn("newUserToken");
 
@@ -111,7 +109,7 @@ class UserServiceImplTest {
     void registerUser_UserAlreadyExists_ThrowsUserException() {
         // Arrange
         // 1. Mock: userRepo.findByEmail returns a UserInfo (user already exists)
-        when(userRepo.findByEmail(anyString())).thenReturn(mockUserInfo);
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(mockUserInfo));
 
         // Act & Assert
         UserException thrown = assertThrows(UserException.class, () -> {
@@ -129,14 +127,14 @@ class UserServiceImplTest {
     }
 
     @Test
-    void loginUser_Success() {
+    void loginUser_Success() throws UserException {
         // Arrange
         String userEmail = mockUserDTO.getEmail();
         String newToken = "newlyGeneratedToken";
         LocalDateTime now = LocalDateTime.now();
 
         // 1. Mock dependencies
-        when(userRepo.findByEmail(userEmail)).thenReturn(mockUserInfo);
+        when(userRepo.findByEmail(userEmail)).thenReturn(Optional.of(mockUserInfo));
         when(jwtUtil.generateToken(userEmail)).thenReturn(newToken);
 
         // 2. Mock userRepo.save to update the token/date and return the updated object

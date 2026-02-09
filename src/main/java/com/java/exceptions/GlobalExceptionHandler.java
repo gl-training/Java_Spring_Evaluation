@@ -1,6 +1,7 @@
 package com.java.exceptions;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,46 +15,56 @@ import org.springframework.web.context.request.WebRequest;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserException.class)
-	public ResponseEntity<ErrorDetails> myExceptionHandler(UserException pe , WebRequest req)
+	public ResponseEntity<ErrorResponse> myExceptionHandler(UserException pe , WebRequest req)
 	{
 		ErrorDetails err  = new ErrorDetails();
 		err.setTimestamp(LocalDateTime.now());
 		err.setCode(ErrorCode.ERROR_INPUT_REQUEST);
 		err.setDetail(pe.getMessage());
-		
-		return new ResponseEntity<ErrorDetails>(err,HttpStatus.BAD_REQUEST);
-		
+
+		ErrorResponse errorResponse = new ErrorResponse();
+		errorResponse.setError(Collections.singletonList(err));
+
+		return new ResponseEntity<ErrorResponse>(errorResponse,HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorDetails> myExceptionHandler(MethodArgumentNotValidException pe)
+	public ResponseEntity<ErrorResponse> myExceptionHandler(MethodArgumentNotValidException pe)
 	{
 		ErrorDetails err  = new ErrorDetails();
 		err.setTimestamp(LocalDateTime.now());
 		err.setCode(ErrorCode.ERROR_SING_UP);
 		err.setDetail(pe.getFieldError().getDefaultMessage());
+
+		ErrorResponse errorResponse = new ErrorResponse();
+		errorResponse.setError(Collections.singletonList(err));
 		
-		return new ResponseEntity<ErrorDetails>(err,HttpStatus.BAD_REQUEST);
-		
+		return new ResponseEntity<ErrorResponse>(errorResponse,HttpStatus.UNAUTHORIZED);
 	}
 	 
 	@ExceptionHandler(BadCredentialsException.class)
-	public ResponseEntity<ErrorDetails> myExceptionHandler(BadCredentialsException e) {
+	public ResponseEntity<ErrorResponse> myExceptionHandler(BadCredentialsException e) {
 	     ErrorDetails err = new ErrorDetails();
 		 err.setCode(ErrorCode.INVALID_CREDENTIALS);
 	     err.setTimestamp(LocalDateTime.now());
 	     err.setDetail(e.getMessage());
-	     
-	     return new ResponseEntity<>(err, HttpStatus.UNAUTHORIZED);
+
+		ErrorResponse errorResponse = new ErrorResponse();
+		errorResponse.setError(Collections.singletonList(err));
+
+		return new ResponseEntity<ErrorResponse>(errorResponse,HttpStatus.UNAUTHORIZED);
 	}
 	 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorDetails> myExceptionHandler(Exception e) {
+	public ResponseEntity<ErrorResponse> myExceptionHandler(Exception e) {
 		 ErrorDetails err = new ErrorDetails();
 		 err.setCode(ErrorCode.INTERNAL_ERROR);
 		 err.setTimestamp(LocalDateTime.now());
 		 err.setDetail(e.getMessage());
-		 
-		 return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+
+		ErrorResponse errorResponse = new ErrorResponse();
+		errorResponse.setError(Collections.singletonList(err));
+
+		return new ResponseEntity<ErrorResponse>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

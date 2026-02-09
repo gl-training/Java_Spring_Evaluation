@@ -17,16 +17,14 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-	@PostMapping("/app/sign-up")
+	@PostMapping("/sign-up")
 	public ResponseEntity<UserDTO> signUpUserHandler(@Validated @RequestBody UserDTO user) throws UserException {
-
 		UserDTO p = userService.registerUser(user);
-		
 		return new ResponseEntity<UserDTO>(p,HttpStatus.CREATED);
 	}
 
 	// Authentication with JWT token
-	@GetMapping("/app/login")
+	@GetMapping("/login")
 	public ResponseEntity<UserInfo> welcomeLoggedInUserHandler() throws UserException {
 		UserInfo user =  userService.loginUser();
 		return ResponseEntity.ok(user);

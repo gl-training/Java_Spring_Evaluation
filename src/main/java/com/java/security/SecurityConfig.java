@@ -1,6 +1,5 @@
 package com.java.security;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
@@ -8,16 +7,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.java.jwt.JwtValidationFilter;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 @Configuration
 public class SecurityConfig {
@@ -39,7 +40,7 @@ public class SecurityConfig {
 					cfg.setAllowedMethods(Collections.singletonList("*"));
 					cfg.setAllowCredentials(true);
 					cfg.setAllowedHeaders(Collections.singletonList("*"));
-					cfg.setExposedHeaders(Arrays.asList("Authorization"));
+					cfg.setExposedHeaders(Collections.singletonList("Authorization"));
 					
 				   return cfg;
 					
@@ -49,17 +50,18 @@ public class SecurityConfig {
 			
 		.authorizeHttpRequests(
 				(auth)-> auth
-				.requestMatchers(HttpMethod.POST,"/app/sign-up").permitAll()
-				.requestMatchers("/v3/api-docs/**", "/swagger-ui*/**").permitAll()
-				.requestMatchers("/**").hasAnyRole("USER","ADMIN")
+				.antMatchers(HttpMethod.POST,"/sign-up").permitAll()
+				.antMatchers("/v3/api-docs/**", "/h2-console",  "/swagger-ui*/**").permitAll()
+				.antMatchers("/**").hasAnyRole("USER","ADMIN")
 				.anyRequest().authenticated()
 				)
-		.csrf(csrf -> csrf.ignoringRequestMatchers("/**")
+		.csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/**"))
 				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 				)
 		.addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
 		.httpBasic(Customizer.withDefaults())
-		.formLogin(Customizer.withDefaults());
+		.formLogin(AbstractHttpConfigurer::disable)
+	;
 		
 		 return http.build();
 	}
