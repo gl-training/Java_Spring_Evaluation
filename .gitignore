@@ -43,3 +43,4 @@ resolver.log
 # Gradle
 .gradle/
 build/
+/gradle/
